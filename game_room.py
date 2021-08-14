@@ -8,5 +8,6 @@ game_room = {
     },
     'main_channel': None,
     'start': False,
-    'can_join': False
+    'can_join': False,
+    'emojis': {}
 }

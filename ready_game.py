@@ -86,7 +86,7 @@ async def show_roles():
 
 def assign_roles():
     players = len(game_room['members'])
-    loyal = players // 2 + 1
+    loyal = players // 2 + 1 if players != 9 else 6
     evil = players - loyal
     while len(game_room['roles']['loyal']) < loyal:
         game_room['roles']['loyal'].append(LOYAL)
@@ -97,6 +97,13 @@ def assign_roles():
     for i in range(len(current_roles)):
         roles[game_room['members'][i]] = current_roles[i]
 
+def assign_numbers():
+    copied_players = game_room['players'].copy()
+    for emoji in game_room['emojis']:
+        game_room['emojis'][emoji] = copied_players.pop(0)
+        
 async def ready_game():
-    assign_roles()
+    assign_numbers()
     await show_roles()
+    await game_room['main_channel'].send("모든 플레이어에게 직업이 할당되었습니다.")
+    game_room['leader'] = random.choice(game_room['members'])
