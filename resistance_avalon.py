@@ -9,7 +9,7 @@ from discord.enums import Status
 from roles import *
 from ready_game import ready_game
 from game_room import game_room
-from start_round import start_round, add_teammate
+from start_round import start_round, add_teammate,
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
 game = discord.Game("현재 대기")
@@ -74,4 +74,6 @@ async def 마감(ctx):
 async def on_raw_reaction_add(payload):
     if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
         await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
+    if str(payload.emoji) == "👍":
+        
 bot.run(token)
