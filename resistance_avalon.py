@@ -2,19 +2,19 @@ import asyncio
 import discord
 import random
 from discord import activity
+from discord import player
 from discord.abc import User
 from discord.ext import commands
 from discord.enums import Status
 from roles import *
 from ready_game import ready_game
 from game_room import game_room
-from start_round import start_round
+from start_round import start_round, add_teammate
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
 game = discord.Game("현재 대기")
 bot = commands.Bot(command_prefix='!',
                    status=discord.Status.online, activity=game)
-
 
 @bot.command()
 async def 추가(ctx, role):
@@ -70,4 +70,8 @@ async def 마감(ctx):
 	else:
 		await ctx.send("현재 진행중인 게임이 없습니다.")
 
+@bot.event
+async def on_raw_reaction_add(payload):
+    if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
+        await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
 bot.run(token)

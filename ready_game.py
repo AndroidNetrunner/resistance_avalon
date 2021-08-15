@@ -110,4 +110,3 @@ async def ready_game():
     assign_roles()
     await show_roles()
     await game_room['main_channel'].send("모든 플레이어에게 직업이 할당되었습니다.")
-    game_room['leader'] = random.choice(game_room['members'])
