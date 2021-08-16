@@ -10,6 +10,7 @@ from roles import *
 from ready_game import ready_game
 from game_room import game_room
 from start_round import *
+
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
 game = discord.Game("현재 대기")
@@ -73,26 +74,16 @@ async def 마감(ctx):
 async def on_raw_reaction_add(payload):
     if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
         await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
-    elif str(payload.emoji) == "👍":
+    elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
         person = None
         for member in game_room['members']:
             if member.id == payload.user_id:
                 person = member
-                await person.send("찬성에 투표하셨습니다.")
+                await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
                 await vote_message[person].delete()
                 del vote_message[person]
-                current_round['agree'].append(member.name)
+                current_round['agree'].append(member.name) if str(payload.emoji) == "👍" else current_round['disagree'].append(member.name)
                 break
-    elif str(payload.emoji) == "👎":
-        person = None
-        for member in game_room['members']:
-            if member.id == payload.user_id:
-                person = member
-                await person.send("반대에 투표하셨습니다.")
-                await vote_message[person].delete()
-                del vote_message[person]
-                current_round['disagree'].append(member.name)
-                break
-    if len(current_round['agree']) + len(current_round['disagree']) >= len(game_room['members']):
-        await end_vote(len(current_round['agree']), len(current_round['disagree']))
+        if len(current_round['agree']) + len(current_round['disagree']) >= len(game_room['members']):
+            await end_vote(len(current_round['agree']), len(current_round['disagree']))
 bot.run(token)
