@@ -10,6 +10,7 @@ from roles import *
 from ready_game import ready_game
 from game_room import game_room
 from start_round import *
+from mission import try_mission
 
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
@@ -66,7 +67,7 @@ async def 마감(ctx):
 		game_room['can_join'] = False
 		await ctx.send("참가가 마감되었습니다.")
 		await ready_game()
-		await start_round(0)
+		await start_round()
 	else:
 		await ctx.send("현재 진행중인 게임이 없습니다.")
 
@@ -86,4 +87,7 @@ async def on_raw_reaction_add(payload):
                 break
         if len(current_round['agree']) + len(current_round['disagree']) >= len(game_room['members']):
             await end_vote(len(current_round['agree']), len(current_round['disagree']))
+    elif str(payload.emoji) == "⭕" or str(payload.emoji) == "❌":
+        await try_mission(payload, current_round['team'])
+
 bot.run(token)
