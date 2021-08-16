@@ -6,8 +6,19 @@ import random
 from discord import activity
 from discord.abc import User
 from quest_sheet import quest_sheet
-current_round = {'decision': 0}
+current_round = {'decision': 0,
+'agree': [],
+'disagree': []}
 message = None
+vote_message = {}
+
+async def end_vote(agree, disagree):
+	embed = discord.Embed(title="개표 결과, 원정대는 가결되었습니다." if agree > disagree else "개표 결과, 원정대는 부결되었습니다.", description="각 인원의 투표는 다음과 같습니다.")
+	embed.add_field(name="원정대에 찬성한 사람들은 다음과 같습니다.", value=current_round['agree'], inline=False)
+	embed.add_field(name="원정대에 반대한 사람들은 다음과 같습니다.", value=current_round['disagree'], inline=False)
+	await game_room['main_channel'].send(embed=embed)
+	# if agree > disagree:
+	# 	start_mission(current_round['team'])
 
 async def add_teammate(payload, player):
 	global message
@@ -50,6 +61,7 @@ async def start_voting(team):
 	embed.add_field(name="원정대장의 결정에 찬/반 투표를 실행해주세요.", value=f"찬성하시려면 👍을, 반대하시려면 👎을 눌러주세요!", inline=False)
 	for player in game_room['members']:
 		message = await player.send(embed=embed)
+		vote_message[player] = message
 		await message.add_reaction("👍")
 		await message.add_reaction("👎")
 	await game_room['main_channel'].send(embed=embed)
