@@ -13,11 +13,11 @@ current_round = {
     'decision': 0,
     'agree': [],
     'disagree': [],
-	'round': 0
+	'round': 0,
+	'team': []
 }
 message = None
 vote_message = {}
-
 
 async def end_vote(agree, disagree):
 	embed = discord.Embed(title="개표 결과, 원정대는 가결되었습니다." if agree >
@@ -26,11 +26,26 @@ async def end_vote(agree, disagree):
 	                value=current_round['agree'], inline=False)
 	embed.add_field(name="원정대에 반대한 사람들은 다음과 같습니다.",
 	                value=current_round['disagree'], inline=False)
-	await game_room['main_channel'].send(embed=embed)
 	if agree > disagree:
+		await game_room['main_channel'].send(embed=embed)
 		await start_mission(current_round['team'])
+	else:
+		await next_vote(embed)
+	current_round['agree'].clear()
+	current_round['disagree'].clear()
 
-
+async def next_vote(embed):
+	game_info['leader'] = game_room['members'][(game_room['members'].index(game_info['leader']) + 1) % len(game_room['members'])]
+	if current_round['decision'] < 5:
+		embed.add_field(name=f"새로운 원정대장은 {game_info['leader']}입니다.",value="원정대장님은 새로운 원정대를 결정해주세요.")
+		await game_room['main_channel'].send(embed=embed)
+		await decide_team(game_info['round'])
+	else:
+		embed.add_field(name="원정대가 연속 5번 부결되었습니다.", value="미션은 자동실패되며 다음 라운드로 넘어갑니다.")
+		await game_room['main_channel'].send(embed=embed)
+		game_info['round'] += 1
+		await start_round()
+		
 async def add_teammate(payload, player):
 	global message
 	if payload.user_id == game_info['leader'].id:
@@ -47,7 +62,8 @@ async def remove_teammate(payload, player):
 		
 async def decide_team(num):
 	global message
-	current_round['team'] = []
+	current_round['team'].clear()
+	current_round['decision'] += 1
 	player_emojis = ""
 	embed = discord.Embed(title="원정대장님, 원정대를 결성해주셔야 합니다.",
 	                      description=f"이번 라운드에 데려갈 인원은 {quest_sheet[len(game_room['members'])][game_info['round'] - 1]}명입니다.")
@@ -59,7 +75,6 @@ async def decide_team(num):
 	for emoji in game_room['emojis']:
 		if game_room['emojis'][emoji]:
 			await message.add_reaction(emoji)
-
 
 async def start_round():
 	if game_info['round'] > 5:
@@ -74,7 +89,7 @@ async def start_round():
 
 async def start_voting(team):
 	embed = discord.Embed(
-		title=f"원정대장이 {game_info['round']}라운드 {current_round['decision'] + 1}번째 팀을 결정했습니다.")
+		title=f"원정대장이 {game_info['round']}라운드 {current_round['decision']}번째 팀을 결정했습니다.")
 	str_team = ""
 	for player in current_round['team']:
 		str_team += f"{player.name} "

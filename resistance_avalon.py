@@ -81,6 +81,7 @@ async def on_raw_reaction_add(payload):
             if member.id == payload.user_id:
                 person = member
                 await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
+                await game_room['main_channel'].send(f"{person.name}님이 투표하셨습니다.")
                 await vote_message[person].delete()
                 del vote_message[person]
                 current_round['agree'].append(member.name) if str(payload.emoji) == "👍" else current_round['disagree'].append(member.name)
