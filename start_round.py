@@ -33,9 +33,9 @@ async def end_vote(agree, disagree):
 
 async def add_teammate(payload, player):
 	global message
-	if payload.user_id == current_round['leader'].id:
+	if payload.user_id == game_info['leader'].id:
 		current_round['team'].append(player)
-		await current_round['leader'].send(f"{player.name}이 원정대에 추가되었습니다.")
+		await game_info['leader'].send(f"{player.name}이 원정대에 추가되었습니다.")
 		if len(current_round['team']) == quest_sheet[len(game_room['members'])][game_info['round'] - 1]:
 			await message.delete()
 			await start_voting(current_round['team'])
@@ -51,7 +51,7 @@ async def decide_team(num):
 		player_emojis += f"{emoji} : {game_room['emojis'][emoji]}\n" if game_room['emojis'][emoji] else ""
 	embed.add_field(name="원정대로 데려가고 싶은 사람의 이모티콘을 눌러주세요!",
 	                value=f"각 이모티콘이 의미하는 플레이어는 다음과 같습니다.\n{player_emojis}")
-	message = await current_round['leader'].send(embed=embed)
+	message = await game_info['leader'].send(embed=embed)
 	for emoji in game_room['emojis']:
 		if game_room['emojis'][emoji]:
 			await message.add_reaction(emoji)
@@ -60,10 +60,9 @@ async def decide_team(num):
 async def start_round():
 	if game_info['round'] > 5:
 		return
-	current_round['leader'] = random.choice(game_room['members'])
 	game_info['round'] += 1
 	embed = discord.Embed(title=f"{game_info['round']}라운드가 시작되었습니다!")
-	embed.add_field(name=f"현재 원정대장은 {current_round['leader'].name}입니다.",
+	embed.add_field(name=f"현재 원정대장은 {game_info['leader'].name}입니다.",
 	                value=f"이번 라운드에 데려갈 인원은 {quest_sheet[len(game_room['members'])][game_info['round']]}명입니다.")
 	await game_room['main_channel'].send(embed=embed)
 	await decide_team(game_info['round'])

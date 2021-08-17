@@ -52,3 +52,10 @@ async def judge_mission():
 		embed.add_field(name="원정대는 아쉽게도 미션을 실패하였습니다...", value=f"성공: {mission_result['success']} 실패: {mission_result['fail']}")
 		game_info['round_fail'] += 1
 	await game_room['main_channel'].send(embed=embed)
+	await next_round()
+
+async def next_round():
+	from start_round import start_round
+	if not (game_info['round_success'] == 3 or game_info['round_fail'] == 3):
+		game_info['leader'] = game_room['members'][(game_room['members'].index(game_info['leader']) + 1) % len(game_room['members'])]
+		await start_round()

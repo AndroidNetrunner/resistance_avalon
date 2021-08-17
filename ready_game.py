@@ -2,7 +2,7 @@ from game_room import game_room
 from roles import *
 import random
 import discord
-
+from game_info import game_info
 async def merlin(merlin_player):
     evils = []
     for player in roles:
@@ -110,3 +110,4 @@ async def ready_game():
     assign_roles()
     await show_roles()
     await game_room['main_channel'].send("모든 플레이어에게 직업이 할당되었습니다.")
+    game_info['leader'] = random.choice(game_room['members'])
