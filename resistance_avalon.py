@@ -90,4 +90,9 @@ async def on_raw_reaction_add(payload):
     elif str(payload.emoji) == "⭕" or str(payload.emoji) == "❌":
         await try_mission(payload, current_round['team'])
 
+@bot.event
+async def on_raw_reaction_remove(payload):
+    if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
+        await remove_teammate(payload, game_room['emojis'][str(payload.emoji)])
+
 bot.run(token)

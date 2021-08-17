@@ -35,12 +35,16 @@ async def add_teammate(payload, player):
 	global message
 	if payload.user_id == game_info['leader'].id:
 		current_round['team'].append(player)
-		await game_info['leader'].send(f"{player.name}이 원정대에 추가되었습니다.")
+		await game_info['leader'].send(f"{player.name}님이 원정대에 추가되었습니다.")
 		if len(current_round['team']) == quest_sheet[len(game_room['members'])][game_info['round'] - 1]:
 			await message.delete()
 			await start_voting(current_round['team'])
 
-
+async def remove_teammate(payload, player):
+	if payload.user_id == game_info['leader'].id:
+		current_round['team'].remove(player)
+		await game_info['leader'].send(f"{player.name}님이 원정대에서 제거되었습니다.")
+		
 async def decide_team(num):
 	global message
 	current_round['team'] = []
