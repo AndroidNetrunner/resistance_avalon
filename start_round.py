@@ -13,9 +13,9 @@ current_round = {
     'decision': 0,
     'agree': [],
     'disagree': [],
-	'round': 0,
 	'team': []
 }
+
 message = None
 vote_message = {}
 
@@ -82,7 +82,7 @@ async def start_round():
 	game_info['round'] += 1
 	embed = discord.Embed(title=f"{game_info['round']}라운드가 시작되었습니다!")
 	embed.add_field(name=f"현재 원정대장은 {game_info['leader'].name}입니다.",
-	                value=f"이번 라운드에 데려갈 인원은 {quest_sheet[len(game_room['members'])][game_info['round']]}명입니다.")
+	                value=f"이번 라운드에 데려갈 인원은 {quest_sheet[len(game_room['members'])][game_info['round'] - 1]}명입니다.")
 	await game_room['main_channel'].send(embed=embed)
 	await decide_team(game_info['round'])
 
