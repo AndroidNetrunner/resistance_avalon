@@ -79,6 +79,7 @@ async def start_round():
 	if game_info['round'] > 5:
 		return
 	game_info['round'] += 1
+	current_round['decision'] = 0
 	embed = discord.Embed(title=f"{game_info['round']}라운드가 시작되었습니다!")
 	embed.add_field(name=f"현재 원정대장은 {game_info['leader'].name}입니다.",
 	                value=f"이번 라운드에 데려갈 인원은 {quest_sheet[len(game_room['members'])][game_info['round'] - 1]}명입니다.")
@@ -90,7 +91,8 @@ async def start_voting(team):
 		title=f"원정대장이 {game_info['round']}라운드 {current_round['decision']}번째 팀을 결정했습니다.")
 	str_team = ""
 	for player in current_round['team']:
-		str_team += f"{player.name} "
+		str_team += f"{player.name}, "
+	str_team = str_team[:-2]
 	embed.add_field(name="결정한 팀 구성원은...", value=f"{str_team}입니다!", inline=False)
 	embed.add_field(name="원정대장의 결정에 찬/반 투표를 실행해주세요.",
 	                value=f"찬성하시려면 👍을, 반대하시려면 👎을 눌러주세요!", inline=False)

@@ -7,10 +7,11 @@ from discord.abc import User
 from discord.ext import commands
 from discord.enums import Status
 from roles import *
-from ready_game import ready_game
+from ready_game import merlin, ready_game
 from game_room import game_room
 from start_round import *
 from mission import try_mission
+from end_game import nominate_merlin
 
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
@@ -74,7 +75,10 @@ async def 마감(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
-        await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
+        if not game_info['assassination']:
+            await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
+        else:
+            await nominate_merlin(payload)
     elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
         person = None
         for member in game_room['members']:
