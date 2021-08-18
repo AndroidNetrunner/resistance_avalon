@@ -1,4 +1,5 @@
 import asyncio
+from typing import MutableMapping
 import discord
 import random
 from discord import activity
@@ -33,7 +34,14 @@ async def 추가(ctx, role):
     else:
         await ctx.send(f"존재하지 않는 역할입니다.")
 
-
+@bot.command()
+async def 순서(ctx):
+    str_order = ""
+    for member in game_room['members']:
+        str_order += f"{member.name} -> " 
+    str_order += game_room['members'][0].name
+    await ctx.send(str_order)
+    
 @bot.command()
 async def 시작(ctx):
     game_room['main_channel'] = ctx
