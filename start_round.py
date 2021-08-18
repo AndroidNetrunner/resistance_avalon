@@ -43,7 +43,6 @@ async def next_vote(embed):
 	else:
 		embed.add_field(name="원정대가 연속 5번 부결되었습니다.", value="미션은 자동실패되며 다음 라운드로 넘어갑니다.")
 		await game_room['main_channel'].send(embed=embed)
-		game_info['round'] += 1
 		await start_round()
 		
 async def add_teammate(payload, player):
