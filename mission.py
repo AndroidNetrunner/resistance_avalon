@@ -58,5 +58,4 @@ async def next_round():
 	from start_round import start_round
 	if not (game_info['round_success'] == 3 or game_info['round_fail'] == 3):
 		game_info['leader'] = game_room['members'][(game_room['members'].index(game_info['leader']) + 1) % len(game_room['members'])]
-		game_info['round'] += 1
 		await start_round()

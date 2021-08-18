@@ -85,7 +85,6 @@ async def start_round():
 	await game_room['main_channel'].send(embed=embed)
 	await decide_team(game_info['round'])
 
-
 async def start_voting(team):
 	embed = discord.Embed(
 		title=f"원정대장이 {game_info['round']}라운드 {current_round['decision']}번째 팀을 결정했습니다.")
