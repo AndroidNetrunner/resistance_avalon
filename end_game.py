@@ -11,7 +11,7 @@ async def end_game():
 	else:
 		embed=discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="3번의 미션 실패로 인한 악의 하수인 승리")
 		embed=reveal_role(embed)
-		await game_info['main_channel'].send(embed=embed)
+		await game_room['main_channel'].send(embed=embed)
 
 def reveal_role(embed):
 	str_roles = ""
