@@ -29,8 +29,12 @@ async def 추가(ctx, role):
             game_room['roles']['loyal'].append(role)
             await ctx.send(f"{role} 역할이 추가되었습니다.")
     elif role in [MORDRED, MORGANA, OBERON]:
-        game_room['roles']['evil'].append(role)
-        await ctx.send(f"{role} 역할이 추가되었습니다.")
+        if role in game_room['roles']['evil']:
+            game_room['roles']['loyal'].remove(role)
+            await ctx.send(f"{role} 역할이 삭제되었습니다.")
+        else:
+            game_room['roles']['evil'].append(role)
+            await ctx.send(f"{role} 역할이 추가되었습니다.")
     else:
         await ctx.send(f"존재하지 않는 역할입니다.")
 

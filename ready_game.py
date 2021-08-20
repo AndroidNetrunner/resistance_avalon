@@ -41,7 +41,8 @@ async def percival(percival_player):
             merlin_candidate.append(player.name)
     embed = discord.Embed(title="당신의 역할은 퍼시발입니다.", description="당신은 멀린의 정체를 알고 게임을 시작할 수 있습니다.")
     embed.add_field(name="당신의 눈에 보이는 멀린(들)은...", value=f"{merlin_candidate}입니다!")
-
+    await percival_player.send(embed=embed)
+    
 async def mordred(mordred_player):
     evils = []
     for player in roles:
@@ -110,4 +111,5 @@ async def ready_game():
     assign_roles()
     await show_roles()
     await game_room['main_channel'].send("모든 플레이어에게 직업이 할당되었습니다.")
+    print(roles)
     game_info['leader'] = random.choice(game_room['members'])
