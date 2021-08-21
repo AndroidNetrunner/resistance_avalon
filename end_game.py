@@ -1,27 +1,27 @@
 import asyncio
+from utils import is_bot
 import discord
 import random
-from game_info import game_info
+from game_status import game_status
 from game_room import game_room
 from roles import ASSASSIN, EVIL, MERLIN, MORDRED, MORGANA, OBERON, roles
 
 async def end_game():
-	if game_info['round_success'] == 3:
+	if game_status['round_success'] == 3:
 		await start_assassination()
 	else:
 		embed=discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="3번의 미션 실패로 인한 악의 하수인 승리")
-		embed=reveal_role(embed)
-		await game_room['main_channel'].send(embed=embed)
-
-def reveal_role(embed):
+		reveal_role(embed)
+		
+async def reveal_role(embed):
 	str_roles = ""
 	for player in roles:
 		str_roles += f"{player.name} : {roles[player]}\n"
 	embed.add_field(name="각 플레이어의 역할은 다음과 같습니다.", value=str_roles)
-	return embed
+	await game_room['main_channel'].send(embed=embed)
 
 async def start_assassination():
-	game_info['assassination'] = True
+	game_status['assassination'] = True
 	evils = []
 	for player in roles:
 		if roles[player] == ASSASSIN:
@@ -42,26 +42,18 @@ async def start_assassination():
 		if game_room['emojis'][emoji] and game_room['emojis'][emoji] not in evils:
 			await message.add_reaction(emoji)
 
-async def nominate_merlin(payload):
-	is_bot = True
-	for member in game_room['members']:
-		if member.id == payload.user_id:
-			is_bot = False
-			break
-	if is_bot:
-		return
-	nominated = game_room['emojis'][str(payload.emoji)]
-	if roles[nominated] == MERLIN:
-		await successful_assassination()
-	else:
-		await unsuccessful_assassination()
+async def judge_merlin(payload):
+	if not is_bot(payload.id):
+		nominated = game_room['emojis'][str(payload.emoji)]
+		if roles[nominated] == MERLIN:
+			await successful_assassination()
+		else:
+			await unsuccessful_assassination()
 
 async def successful_assassination():
 	embed = discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="멀린 암살 성공으로 인한 악의 하수인 승리")
-	embed = reveal_role(embed)
-	await game_room['main_channel'].send(embed=embed)
-
+	reveal_role(embed)
+	
 async def unsuccessful_assassination():
 	embed = discord.Embed(title="게임 결과, 선의 세력이 승리하였습니다!", description="3번의 미션 성공 및 멀린 암살 실패로 인한 선의 세력 승리")
-	embed = reveal_role(embed)
-	await game_room['main_channel'].send(embed=embed)
+	reveal_role(embed)

@@ -1,5 +1,6 @@
 import asyncio
 from typing import MutableMapping
+from utils import add_role_in_active_roles, remove_role_from_active_roles
 import discord
 import random
 from discord import activity
@@ -12,7 +13,7 @@ from ready_game import merlin, ready_game
 from game_room import game_room
 from start_round import *
 from mission import try_mission
-from end_game import nominate_merlin
+from end_game import judge_merlin
 
 token = open("C:/Users/byukim/Documents/python/discord_bot/resistance_avalon/token.txt",
              'r').read()
@@ -22,19 +23,18 @@ bot = commands.Bot(command_prefix='!',
 @bot.command()
 async def 추가(ctx, role):
     if role == PERCIVAL:
-        if role in game_room['roles']['loyal']:
-            game_room['roles']['loyal'].remove(role)
-            await ctx.send(f"{role} 역할이 삭제되었습니다.")
-        else:
-            game_room['roles']['loyal'].append(role)
-            await ctx.send(f"{role} 역할이 추가되었습니다.")
+        add_role_in_active_roles(role, game_room['roles']['loyal'])
     elif role in [MORDRED, MORGANA, OBERON]:
-        if role in game_room['roles']['evil']:
-            game_room['roles']['loyal'].remove(role)
-            await ctx.send(f"{role} 역할이 삭제되었습니다.")
-        else:
-            game_room['roles']['evil'].append(role)
-            await ctx.send(f"{role} 역할이 추가되었습니다.")
+        add_role_in_active_roles(role, game_room['roles']['evil'])
+    else:
+        await ctx.send(f"존재하지 않는 역할입니다.")
+
+@bot.command()
+async def 삭제(ctx, role):
+    if role == PERCIVAL:
+        remove_role_from_active_roles(role, game_room['roles']['loyal'])
+    elif role in [MORDRED, MORGANA, OBERON]:
+        remove_role_from_active_roles(role, game_room['roles']['evil'])
     else:
         await ctx.send(f"존재하지 않는 역할입니다.")
 
@@ -57,7 +57,6 @@ async def 시작(ctx):
         name="참가 방법", value="게임에 참가하고 싶다면 !참가를 입력해주세요.", inline=False)
     await ctx.send(embed=embed)
 
-
 @bot.command()
 async def 참가(ctx):
     if game_room['can_join'] == True:
@@ -73,9 +72,9 @@ async def 참가(ctx):
 
 @bot.command()
 async def 마감(ctx):
-	# if len(game_room['members']) < 5:
-	# 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-	# 	return
+	if len(game_room['members']) < 5:
+		await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+		return
 	if game_room['can_join']:
 		game_room['can_join'] = False
 		await ctx.send("참가가 마감되었습니다.")
@@ -87,10 +86,10 @@ async def 마감(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     if str(payload.emoji) in game_room['emojis'] and game_room['emojis'][str(payload.emoji)]:
-        if not game_info['assassination']:
+        if not game_status['assassination']:
             await add_teammate(payload, game_room['emojis'][str(payload.emoji)])
         else:
-            await nominate_merlin(payload)
+            await judge_merlin(payload)
     elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
         person = None
         for member in game_room['members']:

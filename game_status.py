@@ -1,4 +1,4 @@
-game_info = {
+game_status = {
 	"round" : 0,
 	"round_success" : 0,
 	"round_fail" : 0,
