@@ -3,6 +3,7 @@ from roles import *
 import random
 import discord
 from game_status import game_status
+
 async def merlin(merlin_player):
     evils = []
     for player in roles:
@@ -62,7 +63,7 @@ async def morgana(morgana_player):
     await morgana_player.send(embed=embed)
 
 async def oberon(oberon_player):
-    embed = discord.Embed(title="당신의 역할은 오베론입니다.", description="다른 악의 하수인들을 알 수 없고, 악의 하수인들도 당신의 정체를 모릅니다.")
+    embed = discord.Embed(title="당신의 역할은 오베론입니다.", description="악의 하수인이지만 다른 악의 하수인들을 알 수 없고, 악의 하수인들도 당신의 정체를 모릅니다.")
     await oberon_player.send(embed=embed)
 
 async def show_roles():
@@ -85,7 +86,7 @@ async def show_roles():
         elif role == EVIL:
             await evil(player)
 
-def assign_roles():
+def add_normal_roles():
     players = len(game_room['members'])
     loyal = players // 2 + 1 if players != 9 else 6
     evil = players - loyal
@@ -93,6 +94,9 @@ def assign_roles():
         game_room['roles']['loyal'].append(LOYAL)
     while len(game_room['roles']['evil']) < evil:
         game_room['roles']['evil'].append(EVIL)
+
+def assign_roles():
+    add_normal_roles()
     current_roles = game_room['roles']['loyal'] + game_room['roles']['evil']
     random.shuffle(current_roles)
     for i in range(len(current_roles)):
