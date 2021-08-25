@@ -1,5 +1,4 @@
 import asyncio
-from typing import MutableMapping
 from utils import add_role_in_active_roles, remove_role_from_active_roles
 import discord
 import random
@@ -72,9 +71,9 @@ async def 참가(ctx):
 
 @bot.command()
 async def 마감(ctx):
-	if len(game_room['members']) < 5:
-		await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-		return
+	# if len(game_room['members']) < 5:
+	# 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+	# 	return
 	if game_room['can_join']:
 		game_room['can_join'] = False
 		await ctx.send("참가가 마감되었습니다.")

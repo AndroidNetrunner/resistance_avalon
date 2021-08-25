@@ -11,7 +11,7 @@ async def end_game():
 		await start_assassination()
 	else:
 		embed=discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="3번의 미션 실패로 인한 악의 하수인 승리")
-		reveal_role(embed)
+		await reveal_role(embed)
 		
 async def reveal_role(embed):
 	str_roles = ""
@@ -43,7 +43,7 @@ async def start_assassination():
 			await message.add_reaction(emoji)
 
 async def judge_merlin(payload):
-	if not is_bot(payload.id):
+	if not is_bot(payload.user_id):
 		nominated = game_room['emojis'][str(payload.emoji)]
 		if roles[nominated] == MERLIN:
 			await successful_assassination()
@@ -52,8 +52,8 @@ async def judge_merlin(payload):
 
 async def successful_assassination():
 	embed = discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="멀린 암살 성공으로 인한 악의 하수인 승리")
-	reveal_role(embed)
+	await reveal_role(embed)
 	
 async def unsuccessful_assassination():
 	embed = discord.Embed(title="게임 결과, 선의 세력이 승리하였습니다!", description="3번의 미션 성공 및 멀린 암살 실패로 인한 선의 세력 승리")
-	reveal_role(embed)
+	await reveal_role(embed)
