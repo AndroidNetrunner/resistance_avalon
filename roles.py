@@ -6,5 +6,3 @@ PERCIVAL = "퍼시발"
 MORDRED = "모드레드"
 MORGANA = "모르가나"
 OBERON = "오베론"
-
-roles = {}
