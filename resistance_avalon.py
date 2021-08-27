@@ -21,6 +21,9 @@ bot = commands.Bot(command_prefix='!',
 
 @bot.command()
 async def 추가(ctx, role):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
     room_info = active_games[ctx.channel.id]['game_room']
     if role == PERCIVAL:
         await add_role_in_active_roles(role, room_info.roles['loyal'], room_info)
@@ -31,6 +34,9 @@ async def 추가(ctx, role):
 
 @bot.command()
 async def 삭제(ctx, role):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
     room_info = active_games[ctx.channel.id]['game_room']
     if role == PERCIVAL:
         await remove_role_from_active_roles(role, room_info.roles['loyal'], room_info)
@@ -41,6 +47,9 @@ async def 삭제(ctx, role):
 
 @bot.command()
 async def 순서(ctx):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
     room_info = active_games[ctx.channel.id]['game_room']
     str_order = ""
     for member in room_info.members:
@@ -70,6 +79,9 @@ async def 시작(ctx):
 
 @bot.command()
 async def 참가(ctx):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
     room_info = active_games[ctx.channel.id]['game_room']
     if room_info.can_join == True:
         player = ctx.message.author
@@ -84,6 +96,9 @@ async def 참가(ctx):
 
 @bot.command()
 async def 마감(ctx):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
     current_game = active_games[ctx.channel.id]
     # if len(room_info.members) < 5:
     # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
@@ -132,6 +147,7 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
+    current_game = None
     for channel_id in active_games:
         for member in active_games[channel_id].members:
             if payload.user_id == member.id:
