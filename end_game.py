@@ -3,6 +3,7 @@ from utils import is_bot
 import discord
 import random
 from roles import ASSASSIN, EVIL, MERLIN, MORDRED, MORGANA, OBERON
+from active_games import active_games
 
 async def end_game(current_game):
     game_status = current_game['game_status']
@@ -19,6 +20,7 @@ async def reveal_role(current_game, embed):
         str_roles += f"{player.name} : {roles[player]}\n"
     embed.add_field(name="각 플레이어의 역할은 다음과 같습니다.", value=str_roles)
     await current_game['game_room'].main_channel.send(embed=embed)
+    del active_games[current_game['game_room'].main_channel.channel.id]
 
 async def start_assassination(current_game):
     game_status = current_game['game_status']

@@ -12,17 +12,16 @@ from Game_room import Game_room
 from start_round import *
 from mission import try_mission
 from end_game import judge_merlin
+from active_games import active_games
 
 token = open("token.txt", 'r').read()
 game = discord.Game("현재 대기")
 bot = commands.Bot(command_prefix='!',
                    status=discord.Status.online, activity=game)
 
-active_game = {}
-
 @bot.command()
 async def 추가(ctx, role):
-    room_info = active_game[ctx.channel.id]['game_room']
+    room_info = active_games[ctx.channel.id]['game_room']
     if role == PERCIVAL:
         await add_role_in_active_roles(role, room_info.roles['loyal'], room_info)
     elif role in [MORDRED, MORGANA, OBERON]:
@@ -32,7 +31,7 @@ async def 추가(ctx, role):
 
 @bot.command()
 async def 삭제(ctx, role):
-    room_info = active_game[ctx.channel.id]['game_room']
+    room_info = active_games[ctx.channel.id]['game_room']
     if role == PERCIVAL:
         await remove_role_from_active_roles(role, room_info.roles['loyal'], room_info)
     elif role in [MORDRED, MORGANA, OBERON]:
@@ -42,7 +41,7 @@ async def 삭제(ctx, role):
 
 @bot.command()
 async def 순서(ctx):
-    room_info = active_game[ctx.channel.id]['game_room']
+    room_info = active_games[ctx.channel.id]['game_room']
     str_order = ""
     for member in room_info.members:
         str_order += f"{member.name} -> " 
@@ -51,10 +50,13 @@ async def 순서(ctx):
     
 @bot.command()
 async def 시작(ctx):
+    if ctx.channel.id in active_games:
+        await ctx.send("이미 시작한 게임이 존재합니다.")
+        return
     current_game = {
         'game_room': Game_room()
     }
-    active_game[ctx.channel.id] = current_game
+    active_games[ctx.channel.id] = current_game
     room_info = current_game['game_room']
     room_info.main_channel = ctx
     room_info.members.append(ctx.message.author)
@@ -68,7 +70,7 @@ async def 시작(ctx):
 
 @bot.command()
 async def 참가(ctx):
-    room_info = active_game[ctx.channel.id]['game_room']
+    room_info = active_games[ctx.channel.id]['game_room']
     if room_info.can_join == True:
         player = ctx.message.author
         if player not in room_info.members:
@@ -82,7 +84,7 @@ async def 참가(ctx):
 
 @bot.command()
 async def 마감(ctx):
-    current_game = active_game[ctx.channel.id]
+    current_game = active_games[ctx.channel.id]
     # if len(room_info.members) < 5:
     # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
     # 	return
@@ -97,10 +99,10 @@ async def 마감(ctx):
 @bot.event
 async def on_raw_reaction_add(payload):
     current_game = None
-    for channel_id in active_game:
-        for member in active_game[channel_id]['game_room'].members:
+    for channel_id in active_games:
+        for member in active_games[channel_id]['game_room'].members:
             if payload.user_id == member.id:
-                current_game = active_game[channel_id]
+                current_game = active_games[channel_id]
                 break
     room_info = current_game['game_room'] if current_game else None
     game_status = current_game['game_status'] if current_game else None
@@ -130,10 +132,10 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    for channel_id in active_game:
-        for member in active_game[channel_id].members:
+    for channel_id in active_games:
+        for member in active_games[channel_id].members:
             if payload.user_id == member.id:
-                current_game = active_game[channel_id]
+                current_game = active_games[channel_id]
                 break
     room_info = current_game['game_room'] if current_game else None
     if not room_info:
