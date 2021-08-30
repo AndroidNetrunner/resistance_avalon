@@ -14,8 +14,9 @@ from mission import try_mission
 from end_game import judge_merlin
 from active_games import active_games
 
+
 token = open("token.txt", 'r').read()
-game = discord.Game("현재 대기")
+game = discord.Game(f"{len(active_games)}개 게임")
 bot = commands.Bot(command_prefix='!',
                    status=discord.Status.online, activity=game)
 
@@ -74,7 +75,7 @@ async def 시작(ctx):
                           desciption="레지스탕스 아발론은 선과 악의 세력이 대립하는 마피아 게임입니다. 선과 악의 갈등 속에서 승리를 위해 진실을 파악하세요!")
     embed.add_field(
         name="참가 방법", value="게임에 참가하고 싶다면 !참가를 입력해주세요.", inline=False)
-    await bot.change_presence(activity=discord.Game(name="게임 진행"))
+    await bot.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
     await ctx.send(embed=embed)
 
 @bot.command()
@@ -110,6 +111,15 @@ async def 마감(ctx):
         await start_round(current_game)
     else:
         await ctx.send("현재 진행중인 게임이 없습니다.")
+
+@bot.command()
+async def 리셋(ctx):
+    if ctx.channel.id not in active_games:
+        await ctx.send("시작한 게임이 존재하지 않습니다.")
+        return
+    del active_games[ctx.channel.id]
+    await bot.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
+    await ctx.send("진행하는 게임을 중단합니다.")
 
 @bot.event
 async def on_raw_reaction_add(payload):
