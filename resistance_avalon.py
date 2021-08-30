@@ -17,7 +17,7 @@ from active_games import active_games
 
 token = open("token.txt", 'r').read()
 game = discord.Game(f"{len(active_games)}개 게임")
-bot = commands.Bot(command_prefix='!',
+bot = commands.Bot(command_prefix='>',
                    status=discord.Status.online, activity=game)
 
 @bot.command()
@@ -74,7 +74,7 @@ async def 시작(ctx):
     embed = discord.Embed(title="레지스탕스 아발론에 오신 것을 환영합니다!",
                           desciption="레지스탕스 아발론은 선과 악의 세력이 대립하는 마피아 게임입니다. 선과 악의 갈등 속에서 승리를 위해 진실을 파악하세요!")
     embed.add_field(
-        name="참가 방법", value="게임에 참가하고 싶다면 !참가를 입력해주세요.", inline=False)
+        name="참가 방법", value="게임에 참가하고 싶다면 >참가를 입력해주세요.", inline=False)
     await bot.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
     await ctx.send(embed=embed)
 
