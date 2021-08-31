@@ -94,7 +94,6 @@ async def 참가(ctx):
     else:
         await ctx.send("참가가 이미 마감되었습니다.")
 
-
 @bot.command()
 async def 마감(ctx):
     if ctx.channel.id not in active_games:
