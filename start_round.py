@@ -16,7 +16,7 @@ async def end_vote(current_game):
                     value=current_round['agree'], inline=False)
     embed.add_field(name="원정대에 반대한 사람들은 다음과 같습니다.",
                     value=current_round['disagree'], inline=False)
-    if current_round['agree'] > current_round['disagree']:
+    if len(current_round['agree']) > len(current_round['disagree']):
     	await game_room.main_channel.send(embed=embed)
     	await start_mission(current_game)
     else:
