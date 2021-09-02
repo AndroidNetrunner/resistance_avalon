@@ -33,7 +33,7 @@ async def next_vote(embed, current_game):
     if current_round['decision'] < 5:
         embed.add_field(name=f"새로운 원정대장은 {game_status.leader}입니다.", value="원정대장님은 새로운 원정대를 결정해주세요.")
         await game_room.main_channel.send(embed=embed)
-        await decide_team(game_status.round)
+        await decide_team(game_room, game_status)
     else:
         embed.add_field(name="원정대가 연속 5번 부결되었습니다.", value="미션은 자동실패되며 다음 라운드로 넘어갑니다.")
         await game_room.main_channel.send(embed=embed)

@@ -21,8 +21,7 @@ async def reveal_role(current_game, embed):
     embed.add_field(name="각 플레이어의 역할은 다음과 같습니다.", value=str_roles)
     message = await current_game['game_room'].main_channel.send(embed=embed)
     del active_games[current_game['game_room'].main_channel.channel.id]
-    await message.author.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
-
+ 
 async def start_assassination(current_game):
     game_status = current_game['game_status']
     roles = game_status.roles
