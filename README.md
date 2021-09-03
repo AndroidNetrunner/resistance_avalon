@@ -65,3 +65,7 @@
 <li><span style="color:red">모드레드</span> : <span style="color:skyblue">멀린</span>에게 본인의 정체가 발각되지 않습니다.
 <li><span style="color:red">모르가나</span> : <span style="color:skyblue">퍼시발</span>에게 본인도 <span style="color:skyblue">멀린</span>이라고 보입니다. 누가 진짜 <span style="color:skyblue">멀린</span>인지 <span style="color:skyblue">퍼시발</span>은 알 수 없습니다.
 <li><span style="color:red">오베론</span> : 게임 시작 시, 다른 <span style="color:red">악의 하수인</span>들을 알 수 없고, 다른<span style="color:red">악의 하수인</span>들도 <span style="color:red">오베론</span>을 모릅니다. 
+
+# 패치 사항
+## 2021.09.02
+<li> 원정대가 부결되어도 미션을 진행하던 문제를 해결하였습니다.
