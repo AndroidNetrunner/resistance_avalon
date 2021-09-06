@@ -85,6 +85,9 @@ async def 참가(ctx):
         return
     room_info = active_games[ctx.channel.id]['game_room']
     if room_info.can_join == True:
+        if len(room_info.members) == 10:
+            await ctx.send("제한 인원(10명)을 초과하였습니다.")
+            return
         player = ctx.message.author
         if player not in room_info.members:
             room_info.members.append(player)
@@ -100,9 +103,9 @@ async def 마감(ctx):
         await ctx.send("시작한 게임이 존재하지 않습니다.")
         return
     current_game = active_games[ctx.channel.id]
-    # if len(room_info.members) < 5:
-    # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-    # 	return
+    if len(current_game['game_room'].members) < 5:
+    	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+    	return
     if current_game['game_room'].can_join:
         current_game['game_room'].can_join = False
         await ctx.send("참가가 마감되었습니다.")
@@ -168,4 +171,7 @@ async def on_raw_reaction_remove(payload):
     if str(payload.emoji) in room_info.emojis and room_info.emojis[str(payload.emoji)]:
         await remove_teammate(payload, room_info.emojis[str(payload.emoji)], current_game)
 
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
 bot.run(token)
