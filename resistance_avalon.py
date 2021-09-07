@@ -60,6 +60,7 @@ async def 순서(ctx):
     
 @bot.command()
 async def 시작(ctx):
+    print(f"start:{ctx.channel.name}")
     if ctx.channel.id in active_games:
         await ctx.send("이미 시작한 게임이 존재합니다.")
         return
