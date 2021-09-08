@@ -132,7 +132,7 @@ async def on_raw_reaction_add(payload):
                 current_game = active_games[channel_id]
                 break
     room_info = current_game['game_room'] if current_game else None
-    game_status = current_game['game_status'] if 'game_status' in current_game else None
+    game_status = current_game['game_status'] if current_game and 'game_status' in current_game else None
     if not (room_info and game_status):
         return
     current_round = game_status.round_info
