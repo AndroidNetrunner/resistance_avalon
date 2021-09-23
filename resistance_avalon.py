@@ -1,6 +1,7 @@
 import asyncio
 from utils import add_role_in_active_roles, remove_role_from_active_roles
 import discord
+import datetime
 from discord import activity
 from discord import player
 from discord.abc import User
@@ -60,7 +61,7 @@ async def 순서(ctx):
     
 @bot.command()
 async def 시작(ctx):
-    print(f"start:{ctx.channel.id}")
+    print(f"{datetime.datetime.now()} start:{ctx.channel.id}")
     if ctx.channel.id in active_games:
         await ctx.send("이미 시작한 게임이 존재합니다.")
         return
