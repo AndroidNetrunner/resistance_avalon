@@ -114,7 +114,7 @@ async def ready_game(current_game):
     room_info = current_game['game_room']
     current_game['game_status'] = Game_status()
     roles = current_game['game_status'].roles
-    current_quest_sheet = quest_sheet[len(current_game['game_room'].members]
+    current_quest_sheet = quest_sheet[len(current_game['game_room'].members)]
     assign_numbers(room_info)
     assign_roles(room_info, roles)
     await show_roles(roles)
