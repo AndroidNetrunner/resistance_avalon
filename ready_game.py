@@ -2,6 +2,7 @@ from roles import *
 import random
 import discord
 from Game_status import Game_status
+from quest_sheet import quest_sheet
 
 async def merlin(merlin_player, roles):
     evils = []
@@ -113,9 +114,16 @@ async def ready_game(current_game):
     room_info = current_game['game_room']
     current_game['game_status'] = Game_status()
     roles = current_game['game_status'].roles
+    current_quest_sheet = quest_sheet[len(current_game['game_room'].members]
     assign_numbers(room_info)
     assign_roles(room_info, roles)
     await show_roles(roles)
-    embed = discord.Embed()
-    await room_info.main_channel.send("모든 플레이어에게 직업이 할당되었습니다.")
+    embed = discord.Embed(title=f"모든 플레이어에게 직업이 할당되었습니다.", description=f"""
+    각 라운드의 원정대 인원수는 다음과 같습니다.\n
+    1라운드: {current_quest_sheet[0]}\n
+    2라운드: {current_quest_sheet[1]}\n
+    3라운드: {current_quest_sheet[2]}\n
+    4라운드: {current_quest_sheet[3]}\n
+    5라운드: {current_quest_sheet[4]}\n""")
+    await room_info.main_channel.send(embed=embed)
     current_game['game_status'].leader = random.choice(room_info.members)
