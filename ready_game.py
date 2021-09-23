@@ -116,5 +116,6 @@ async def ready_game(current_game):
     assign_numbers(room_info)
     assign_roles(room_info, roles)
     await show_roles(roles)
+    embed = discord.Embed()
     await room_info.main_channel.send("모든 플레이어에게 직업이 할당되었습니다.")
     current_game['game_status'].leader = random.choice(room_info.members)
