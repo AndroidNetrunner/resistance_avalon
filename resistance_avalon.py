@@ -61,10 +61,10 @@ async def 순서(ctx):
     
 @bot.command()
 async def 시작(ctx):
-    print(f"{datetime.datetime.now()} start:{ctx.channel.id}")
     if ctx.channel.id in active_games:
         await ctx.send("이미 시작한 게임이 존재합니다.")
         return
+    print(f"{datetime.datetime.now()} : <start> ctx.channel.id"))
     current_game = {
         'game_room': Game_room()
     }
@@ -175,5 +175,6 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_command_error(ctx, error):
+    print(f"{datetime.datetime.now()} : <Error> {ctx.channel.id}")
     await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
 bot.run(token)
