@@ -64,7 +64,7 @@ async def 시작(ctx):
     if ctx.channel.id in active_games:
         await ctx.send("이미 시작한 게임이 존재합니다.")
         return
-    print(f"{datetime.datetime.now()} : <start> ctx.channel.id"))
+    print(f"{datetime.datetime.now()} : <start> ctx.channel.id")
     current_game = {
         'game_room': Game_room()
     }
