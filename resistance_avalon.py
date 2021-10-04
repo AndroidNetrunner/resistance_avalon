@@ -175,6 +175,6 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_command_error(ctx, error):
-    print(f"{datetime.datetime.now()} : <Error> {ctx.channel.id}")
+    print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}")
     await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
 bot.run(token)
