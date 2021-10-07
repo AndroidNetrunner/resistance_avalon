@@ -175,7 +175,10 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_command_error(ctx, error):
-    print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}")
-    await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
-    print(error)
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send(f"{ctx.message.content} 는 존재하지 않는 명령어입니다.")
+    else:
+        await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
+        print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}, error: {error}")
+    
 bot.run(token)
