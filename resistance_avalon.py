@@ -14,12 +14,13 @@ from start_round import *
 from mission import try_mission
 from end_game import judge_merlin
 from active_games import active_games
-
+from threading import Lock
 
 token = open("token.txt", 'r').read()
 game = discord.Game(f"{len(active_games)}개 게임")
 bot = commands.Bot(command_prefix='>',
                    status=discord.Status.online, activity=game)
+lock_for_vote = Lock()
 
 @bot.command()
 async def 추가(ctx, role):
@@ -144,6 +145,7 @@ async def on_raw_reaction_add(payload):
         else:
             await judge_merlin(payload, current_game)
     elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
+        lock_for_vote.acquire()
         person = None
         for member in room_info.members:
             if member.id == payload.user_id:
@@ -156,9 +158,9 @@ async def on_raw_reaction_add(payload):
                 break
         if len(current_round['agree']) + len(current_round['disagree']) >= len(room_info.members):
             await end_vote(current_game)
+        lock_for_vote.release()
     elif str(payload.emoji) == "⭕" or str(payload.emoji) == "❌":
         await try_mission(payload, current_round['team'], current_game)
-
 @bot.event
 async def on_raw_reaction_remove(payload):
     current_game = None

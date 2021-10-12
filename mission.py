@@ -3,7 +3,9 @@ import discord
 import random
 from roles import *
 from end_game import end_game
+from threading import Lock
 
+lock_for_mission = Lock()
 
 async def start_mission(current_game):
     game_status = current_game['game_status']
@@ -27,6 +29,7 @@ async def start_mission(current_game):
 
 
 async def try_mission(payload, team, current_game):
+    lock_for_mission.acquire()
     person = None
     game_status = current_game['game_status']
     mission_result = game_status.mission_result
@@ -43,7 +46,7 @@ async def try_mission(payload, team, current_game):
         await game_status.mission_message[person].delete()
         if mission_result['success'] + mission_result['fail'] == len(team):
             await judge_mission(current_game)
-
+    lock_for_mission.release()
 
 async def judge_mission(current_game):
     game_status = current_game['game_status']
