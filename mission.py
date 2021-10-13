@@ -3,6 +3,9 @@ import discord
 import random
 from roles import *
 from end_game import end_game
+from threading import Lock
+
+lock_for_mission = Lock()
 
 async def start_mission(current_game):
     game_status = current_game['game_status']
