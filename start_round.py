@@ -117,7 +117,7 @@ async def start_round(current_game):
 async def start_voting(current_game):
     team = current_game['game_status'].round_info['team']
     embed = discord.Embed(
-        title=f"원정대장이 {current_game['game_status'].round}라운드 {current_game['game_status'].round_info['decision']}번째 팀을 결정했습니다.")
+        title=f"{current_game['game_status'].leader.name}님이 {current_game['game_status'].round}라운드 {current_game['game_status'].round_info['decision']}번째 팀을 결정했습니다.")
     str_team = ""
     for player in team:
         str_team += f"{player.name}, "
