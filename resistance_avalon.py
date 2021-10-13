@@ -105,9 +105,9 @@ async def 마감(ctx):
         await ctx.send("시작한 게임이 존재하지 않습니다.")
         return
     current_game = active_games[ctx.channel.id]
-    # if len(current_game['game_room'].members) < 5:
-    # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-    # 	return
+    if len(current_game['game_room'].members) < 5:
+    	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+    	return
     if current_game['game_room'].can_join:
         current_game['game_room'].can_join = False
         await ctx.send("참가가 마감되었습니다.")
