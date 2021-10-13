@@ -6,6 +6,24 @@ from mission import start_mission
 from discord import activity
 from discord.abc import User
 from quest_sheet import quest_sheet
+import time
+
+async def vote(current_game, current_round, payload, lock):
+    await lock.acquire()
+    room_info = current_game['game_room']
+    person = None
+    for member in room_info.members:
+        if member.id == payload.user_id:
+            person = member
+            await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
+            await room_info.main_channel.send(f"{person.name}님이 투표하셨습니다.")
+            await current_round['vote_message'][person].delete()
+            del current_round['vote_message'][person]
+            current_round['agree'].append(member.name) if str(payload.emoji) == "👍" else current_round['disagree'].append(member.name)
+            break
+    if len(current_round['agree']) + len(current_round['disagree']) >= len(room_info.members):
+        await end_vote(current_game)
+    lock.release()
 
 async def end_vote(current_game):
     current_round = current_game['game_status'].round_info

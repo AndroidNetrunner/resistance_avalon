@@ -14,14 +14,13 @@ from start_round import *
 from mission import try_mission
 from end_game import judge_merlin
 from active_games import active_games
-from threading import Lock
 
 token = open("token.txt", 'r').read()
 game = discord.Game(f"{len(active_games)}개 게임")
 bot = commands.Bot(command_prefix='>',
                    status=discord.Status.online, activity=game)
-lock_for_vote = Lock()
-
+lock_for_vote = asyncio.Lock()
+lock_for_mission = asyncio.Lock()
 @bot.command()
 async def 추가(ctx, role):
     if ctx.channel.id not in active_games:
@@ -88,7 +87,7 @@ async def 참가(ctx):
         return
     room_info = active_games[ctx.channel.id]['game_room']
     if room_info.can_join == True:
-        if len(room_info.members) == 10:
+        if len(room_info.members) >= 10:
             await ctx.send("제한 인원(10명)을 초과하였습니다.")
             return
         player = ctx.message.author
@@ -106,9 +105,9 @@ async def 마감(ctx):
         await ctx.send("시작한 게임이 존재하지 않습니다.")
         return
     current_game = active_games[ctx.channel.id]
-    if len(current_game['game_room'].members) < 5:
-    	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-    	return
+    # if len(current_game['game_room'].members) < 5:
+    # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+    # 	return
     if current_game['game_room'].can_join:
         current_game['game_room'].can_join = False
         await ctx.send("참가가 마감되었습니다.")
@@ -145,22 +144,10 @@ async def on_raw_reaction_add(payload):
         else:
             await judge_merlin(payload, current_game)
     elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
-        lock_for_vote.acquire()
-        person = None
-        for member in room_info.members:
-            if member.id == payload.user_id:
-                person = member
-                await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
-                await room_info.main_channel.send(f"{person.name}님이 투표하셨습니다.")
-                await current_round['vote_message'][person].delete()
-                del current_round['vote_message'][person]
-                current_round['agree'].append(member.name) if str(payload.emoji) == "👍" else current_round['disagree'].append(member.name)
-                break
-        if len(current_round['agree']) + len(current_round['disagree']) >= len(room_info.members):
-            await end_vote(current_game)
-        lock_for_vote.release()
+        asyncio.ensure_future(vote(current_game, current_round, payload, lock_for_vote))
     elif str(payload.emoji) == "⭕" or str(payload.emoji) == "❌":
-        await try_mission(payload, current_round['team'], current_game)
+        asyncio.ensure_future(try_mission(payload, current_round['team'], current_game, lock_for_mission))
+
 @bot.event
 async def on_raw_reaction_remove(payload):
     current_game = None

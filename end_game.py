@@ -2,7 +2,7 @@ import asyncio
 from utils import is_bot
 import discord
 import random
-from roles import ASSASSIN, EVIL, MERLIN, MORDRED, MORGANA, OBERON
+from roles import ASSASSIN, EVIL, MERLIN, MORDRED, MORGANA
 from active_games import active_games
 
 async def end_game(current_game):
@@ -33,7 +33,7 @@ async def start_assassination(current_game):
         if roles[player] == ASSASSIN:
             assassin = player
             evils.append(player)
-        elif roles[player] in [MORDRED, MORGANA, OBERON, EVIL]:
+        elif roles[player] in [MORDRED, MORGANA, EVIL]:
             evils.append(player)
     embed = discord.Embed(title="미션이 3번 성공되었습니다.", description="이제 암살자에게는 멀린을 암살할 기회가 주어집니다.")
     embed.add_field(name=f"암살자는 {assassin.name}입니다.", value="암살자는 DM으로 한 명을 지목해 암살해주세요.")
