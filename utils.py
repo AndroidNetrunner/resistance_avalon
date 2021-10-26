@@ -1,3 +1,5 @@
+from active_games import active_games
+
 def is_bot(author_id, game_room):
 	for member in game_room.members:
 		if member.id == author_id:
@@ -17,3 +19,10 @@ async def remove_role_from_active_roles(role, active_roles, game_room):
         await game_room.main_channel.send(f"{role} 역할이 삭제되었습니다.")
     else:
         await game_room.main_channel.send(f"{role}는(은) 추가되지 않은 역할입니다.")
+
+def get_current_game(user_id):
+    for channel_id in active_games:
+            for member in active_games[channel_id]['game_room'].members:
+                if user_id == member.id:
+                    return active_games[channel_id]
+    return None

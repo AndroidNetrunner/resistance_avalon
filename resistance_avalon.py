@@ -1,14 +1,10 @@
 import asyncio
-from utils import add_role_in_active_roles, remove_role_from_active_roles
+from utils import add_role_in_active_roles, get_current_game, remove_role_from_active_roles
 import discord
 import datetime
-from discord import activity
-from discord import player
-from discord.abc import User
 from discord.ext import commands
-from discord.enums import Status
 from roles import *
-from ready_game import merlin, ready_game
+from ready_game import ready_game
 from Game_room import Game_room
 from start_round import *
 from mission import try_mission
@@ -127,12 +123,7 @@ async def 리셋(ctx):
 
 @bot.event
 async def on_raw_reaction_add(payload):
-    current_game = None
-    for channel_id in active_games:
-        for member in active_games[channel_id]['game_room'].members:
-            if payload.user_id == member.id:
-                current_game = active_games[channel_id]
-                break
+    current_game = get_current_game(payload.user_id)
     room_info = current_game['game_room'] if current_game else None
     game_status = current_game['game_status'] if current_game and 'game_status' in current_game else None
     if not (room_info and game_status):
@@ -150,12 +141,7 @@ async def on_raw_reaction_add(payload):
 
 @bot.event
 async def on_raw_reaction_remove(payload):
-    current_game = None
-    for channel_id in active_games:
-        for member in active_games[channel_id]['game_room'].members:
-            if payload.user_id == member.id:
-                current_game = active_games[channel_id]
-                break
+    current_game = get_current_game(payload.user_id)
     room_info = current_game['game_room'] if current_game else None
     if not room_info:
         return
