@@ -1,5 +1,5 @@
 import asyncio
-from utils import add_role_in_active_roles, get_current_game, remove_role_from_active_roles
+from utils import add_role_in_active_roles, get_current_game, is_open, remove_role_from_active_roles
 import discord
 import datetime
 from discord.ext import commands
@@ -12,11 +12,12 @@ from end_game import judge_merlin
 from active_games import active_games
 
 token = open("token.txt", 'r').read()
-game = discord.Game(f"{len(active_games)}개 게임")
+game = discord.Game(f">명령어")
 bot = commands.Bot(command_prefix='>',
                    status=discord.Status.online, activity=game)
 lock_for_vote = asyncio.Lock()
 lock_for_mission = asyncio.Lock()
+
 @bot.command()
 async def 추가(ctx, role):
     if ctx.channel.id not in active_games:
@@ -78,22 +79,15 @@ async def 시작(ctx):
 
 @bot.command()
 async def 참가(ctx):
-    if ctx.channel.id not in active_games:
-        await ctx.send("시작한 게임이 존재하지 않습니다.")
+    room_info = await is_open(ctx)
+    if not room_info:
         return
-    room_info = active_games[ctx.channel.id]['game_room']
-    if room_info.can_join == True:
-        if len(room_info.members) >= 10:
-            await ctx.send("제한 인원(10명)을 초과하였습니다.")
-            return
-        player = ctx.message.author
-        if player not in room_info.members:
-            room_info.members.append(player)
-            await ctx.send("{}님이 참가하셨습니다. 현재 플레이어 {}명".format(player.name, len(room_info.members)))
-        else:
-            await ctx.send("{}님은 이미 참가중입니다.".format(player.name))
+    player = ctx.message.author
+    if player not in room_info.members:
+        room_info.members.append(player)
+        await ctx.send("{}님이 참가하셨습니다. 현재 플레이어 {}명".format(player.name, len(room_info.members)))
     else:
-        await ctx.send("참가가 이미 마감되었습니다.")
+        await ctx.send("{}님은 이미 참가중입니다.".format(player.name))
 
 @bot.command()
 async def 마감(ctx):
@@ -101,16 +95,16 @@ async def 마감(ctx):
         await ctx.send("시작한 게임이 존재하지 않습니다.")
         return
     current_game = active_games[ctx.channel.id]
-    if len(current_game['game_room'].members) < 5:
-    	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-    	return
-    if current_game['game_room'].can_join:
-        current_game['game_room'].can_join = False
-        await ctx.send("참가가 마감되었습니다.")
-        await ready_game(current_game)
-        await start_round(current_game)
-    else:
-        await ctx.send("현재 진행중인 게임이 없습니다.")
+    # if len(current_game['game_room'].members) < 5:
+    # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+    # 	return
+    if not current_game['game_room'].can_join:
+        await ctx.send("게임이 이미 시작되었습니다.")
+        return
+    current_game['game_room'].can_join = False
+    await ctx.send("참가가 마감되었습니다.")
+    await ready_game(current_game)
+    await start_round(current_game)
 
 @bot.command()
 async def 리셋(ctx):
@@ -130,13 +124,10 @@ async def on_raw_reaction_add(payload):
         return
     current_round = game_status.round_info
     if str(payload.emoji) in room_info.emojis and room_info.emojis[str(payload.emoji)]:
-        if not game_status.assassination:
-            await add_teammate(payload, room_info.emojis[str(payload.emoji)], current_game)
-        else:
-            await judge_merlin(payload, current_game)
-    elif str(payload.emoji) == "👍" or str(payload.emoji) == "👎":
+        await judge_merlin(payload, current_game) if game_status.assassination else await add_teammate(payload, room_info.emojis[str(payload.emoji)], current_game)          
+    elif str(payload.emoji) in ["👍","👎"]:
         asyncio.ensure_future(vote(current_game, current_round, payload, lock_for_vote))
-    elif str(payload.emoji) == "⭕" or str(payload.emoji) == "❌":
+    elif str(payload.emoji) in ["⭕", "❌"]:
         asyncio.ensure_future(try_mission(payload, current_round['team'], current_game, lock_for_mission))
 
 @bot.event
@@ -152,8 +143,8 @@ async def on_raw_reaction_remove(payload):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send(f"{ctx.message.content} 는 존재하지 않는 명령어입니다.")
-    else:
-        await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
-        print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}, error: {error}")
+        return
+    await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
+    print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}, error: {error}")
     
 bot.run(token)
