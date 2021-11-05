@@ -62,10 +62,7 @@ async def judge_merlin(payload, current_game):
     if is_bot(payload.user_id, current_game['game_room']):
         return
     nominated = current_game['game_room'].emojis[str(payload.emoji)]
-    if current_game['game_status'].roles[nominated] == MERLIN:
-        await successful_assassination(current_game)
-    else:
-        await unsuccessful_assassination(current_game)
+    await successful_assassination(current_game) if current_game['game_status'].roles[nominated] == MERLIN else await unsuccessful_assassination(current_game)
 
 async def successful_assassination(current_game):
 	embed = discord.Embed(title="게임 결과, 악의 하수인이 승리하였습니다!", description="멀린 암살 성공으로 인한 악의 하수인 승리")
