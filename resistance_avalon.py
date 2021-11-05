@@ -17,6 +17,8 @@ bot = commands.Bot(command_prefix='>',
                    status=discord.Status.online, activity=game)
 lock_for_vote = asyncio.Lock()
 lock_for_mission = asyncio.Lock()
+with open('resistance_avalon.jpg', 'rb') as f:
+    image = f.read()
 
 @bot.command()
 async def 추가(ctx, role):
@@ -95,9 +97,9 @@ async def 마감(ctx):
         await ctx.send("시작한 게임이 존재하지 않습니다.")
         return
     current_game = active_games[ctx.channel.id]
-    # if len(current_game['game_room'].members) < 5:
-    # 	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
-    # 	return
+    if len(current_game['game_room'].members) < 5:
+    	await ctx.send("플레이어 수가 4명 이하입니다. 게임을 시작할 수 없습니다.")
+    	return
     if not current_game['game_room'].can_join:
         await ctx.send("게임이 이미 시작되었습니다.")
         return
@@ -114,6 +116,10 @@ async def 리셋(ctx):
     del active_games[ctx.channel.id]
     await bot.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
     await ctx.send("진행하는 게임을 중단합니다.")
+
+@bot.event
+async def on_ready():
+    await bot.user.edit(avatar=image)
 
 @bot.event
 async def on_raw_reaction_add(payload):
