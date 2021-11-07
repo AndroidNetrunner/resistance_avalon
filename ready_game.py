@@ -1,6 +1,7 @@
 from roles import *
 import random
 import discord
+from discord import Color
 from Game_status import Game_status
 from quest_sheet import quest_sheet
 
@@ -8,7 +9,8 @@ from quest_sheet import quest_sheet
 async def merlin(merlin_player, roles):
     evils = get_visible_players(roles, [MORGANA, OBERON, EVIL, ASSASSIN])
     embed = discord.Embed(title="당신의 역할은 멀린입니다.",
-                          description="모드레드를 제외한 모든 악의 세력을 알 수 있지만, 당신이 암살당한다면 선의 세력은 패배합니다!")
+                          description="모드레드를 제외한 모든 악의 세력을 알 수 있지만, 당신이 암살당한다면 선의 세력은 패배합니다!",
+                          color=Color.blue())
     embed.add_field(name="당신의 눈에 보이는 악의 세력은...", value=f"{evils}입니다!")
     await merlin_player.send(embed=embed)
 
@@ -16,21 +18,24 @@ async def merlin(merlin_player, roles):
 async def assassin(assassin_player, roles):
     evils = get_visible_players(roles, [MORDRED, MORGANA, EVIL])
     embed = discord.Embed(title="당신의 역할은 암살자입니다.",
-                          description="악의 세력이 패배하기 직전, 딱 1명을 암살할 수 있습니다. 멀린을 암살하면 역전승합니다!")
+                          description="악의 세력이 패배하기 직전, 딱 1명을 암살할 수 있습니다. 멀린을 암살하면 역전승합니다!",
+                          color=Color.red())
     embed.add_field(name="당신의 눈에 보이는 악의 세력은...", value=f"{evils}입니다!")
     await assassin_player.send(embed=embed)
 
 
 async def loyal(loyal_player):
     embed = discord.Embed(title="당신의 역할은 선의 세력입니다.",
-                          description="다른 선의 세력을 찾아 미션을 성공시켜 게임에서 승리하세요!")
+                          description="다른 선의 세력을 찾아 미션을 성공시켜 게임에서 승리하세요!",
+                          color=Color.blue())
     await loyal_player.send(embed=embed)
 
 
 async def evil(evil_player, roles):
     evils = get_visible_players(roles, [MORDRED, MORGANA, EVIL, ASSASSIN])
     embed = discord.Embed(title="당신의 역할은 악의 하수인입니다.",
-                          description="다른 악의 하수인 동료들과 함께 미션을 실패시키거나 멀린을 찾아 게임에서 승리하세요!")
+                          description="다른 악의 하수인 동료들과 함께 미션을 실패시키거나 멀린을 찾아 게임에서 승리하세요!",
+                          color=Color.red())
     embed.add_field(name="당신의 눈에 보이는 악의 세력은...", value=f"{evils}입니다!")
     await evil_player.send(embed=embed)
 
@@ -38,7 +43,8 @@ async def evil(evil_player, roles):
 async def percival(percival_player, roles):
     merlin_candidate = get_visible_players(roles, [MERLIN, MORGANA])
     embed = discord.Embed(title="당신의 역할은 퍼시발입니다.",
-                          description="당신은 멀린의 정체를 알고 게임을 시작할 수 있습니다.")
+                          description="당신은 멀린의 정체를 알고 게임을 시작할 수 있습니다.",
+                          color=Color.blue())
     embed.add_field(name="당신의 눈에 보이는 멀린(들)은...",
                     value=f"{merlin_candidate}입니다!")
     await percival_player.send(embed=embed)
@@ -47,7 +53,8 @@ async def percival(percival_player, roles):
 async def mordred(mordred_player, roles):
     evils = get_visible_players(roles, [MORGANA, EVIL, ASSASSIN])
     embed = discord.Embed(title="당신의 역할은 모드레드입니다.",
-                          description="멀린은 당신이 악의 세력인지 모르고 시작합니다.")
+                          description="멀린은 당신이 악의 세력인지 모르고 시작합니다.",
+                          color=Color.red())
     embed.add_field(name="당신의 눈에 보이는 악의 세력은...", value=f"{evils}입니다!")
     await mordred_player.send(embed=embed)
 
@@ -55,16 +62,17 @@ async def mordred(mordred_player, roles):
 async def morgana(morgana_player, roles):
     evils = get_visible_players(roles, [MORDRED, EVIL, ASSASSIN])
     embed = discord.Embed(title="당신의 역할은 모르가나입니다.",
-                          description="퍼시발에게 당신은 멀린 후보로 보입니다.")
+                          description="퍼시발에게 당신은 멀린 후보로 보입니다.",
+                          color=Color.red())
     embed.add_field(name="당신의 눈에 보이는 악의 세력은...", value=f"{evils}입니다!")
     await morgana_player.send(embed=embed)
 
 
 async def oberon(oberon_player):
     embed = discord.Embed(title="당신의 역할은 오베론입니다.",
-                          description="악의 하수인이지만 다른 악의 하수인들을 알 수 없고, 악의 하수인들도 당신의 정체를 모릅니다.")
+                          description="악의 하수인이지만 다른 악의 하수인들을 알 수 없고, 악의 하수인들도 당신의 정체를 모릅니다.",
+                          color=Color.red())
     await oberon_player.send(embed=embed)
-
 
 def get_visible_players(roles, visible_roles):
     visible_players = []
@@ -72,7 +80,6 @@ def get_visible_players(roles, visible_roles):
         if roles[player] in visible_roles:
             visible_players.append(player.name)
     return visible_players
-
 
 async def show_roles(roles):
     for player in roles:
