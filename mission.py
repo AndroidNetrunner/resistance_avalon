@@ -38,16 +38,21 @@ async def try_mission(payload, team, current_game, lock):
     for member in current_game['game_room'].members:
         if member.id == payload.user_id:
             person = member
-    if person:
-        if str(payload.emoji) == "⭕":
-            mission_result['success'] += 1
-            await person.send("미션 성공을 선택하셨습니다.")
-        else:
-            mission_result["fail"] += 1
-            await person.send("미션 실패를 선택하셨습니다.")
-        await game_status.mission_message[person].delete()
-        if mission_result['success'] + mission_result['fail'] == len(team):
-            await judge_mission(current_game)
+    if not person:
+        lock.release()
+        return
+    if payload.message_id != game_status.mission_message[person].id:
+        lock.release()
+        return
+    if str(payload.emoji) == "⭕":
+        mission_result['success'] += 1
+        await person.send("미션 성공을 선택하셨습니다.")
+    else:
+        mission_result["fail"] += 1
+        await person.send("미션 실패를 선택하셨습니다.")
+    await game_status.mission_message[person].delete()
+    if mission_result['success'] + mission_result['fail'] == len(team):
+        await judge_mission(current_game)
     lock.release()
 
 async def judge_mission(current_game):

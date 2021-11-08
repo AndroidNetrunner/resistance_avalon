@@ -15,6 +15,9 @@ async def vote(current_game, current_round, payload, lock):
     for member in room_info.members:
         if member.id == payload.user_id:
             person = member
+            if current_round['vote_message'][person].id != payload.message_id:
+                lock.release()
+                return
             await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
             await room_info.main_channel.send(f"{person.name}님이 투표하셨습니다.")
             await current_round['vote_message'][person].delete()
@@ -60,12 +63,15 @@ async def next_vote(embed, current_game):
 
 async def add_teammate(payload, player, current_game):
     current_round = current_game['game_status'].round_info
-    if payload.user_id == current_game['game_status'].leader.id:
-        current_round['team'].append(player)
-        await current_game['game_status'].leader.send(f"{player.name}님이 원정대에 추가되었습니다.")
-        if len(current_round['team']) == quest_sheet[len(current_game['game_room'].members)][current_game['game_status'].round - 1]:
-            await current_round['message'].delete()
-            await start_voting(current_game)
+    if payload.user_id != current_game['game_status'].leader.id:
+        return
+    if payload.message_id != current_round['message'].id:
+        return
+    current_round['team'].append(player)
+    await current_game['game_status'].leader.send(f"{player.name}님이 원정대에 추가되었습니다.")
+    if len(current_round['team']) == quest_sheet[len(current_game['game_room'].members)][current_game['game_status'].round - 1]:
+        await current_round['message'].delete()
+        await start_voting(current_game)
 
 
 async def remove_teammate(payload, player, current_game):
