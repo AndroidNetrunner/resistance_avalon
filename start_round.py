@@ -15,7 +15,7 @@ async def vote(current_game, current_round, payload, lock):
     for member in room_info.members:
         if member.id == payload.user_id:
             person = member
-            if current_round['vote_message'][person].id != payload.message_id:
+            if person not in current_round['vote_message'] or current_round['vote_message'][person].id != payload.message_id:
                 lock.release()
                 return
             await person.send("찬성에 투표하셨습니다." if str(payload.emoji) == "👍" else "반대에 투표하셨습니다.")
