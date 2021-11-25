@@ -163,6 +163,9 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send(f"{ctx.message.content} 는 존재하지 않는 명령어입니다.")
         return
+    elif isinstance(error, commands.BotMissingPermissions):
+        await ctx.send(f"엇! 제가 다른 분들에게 메세지를 보낼 수 없어요! 아마 제게 메세지를 발송할 권한이 주어지지 않은 것 같아요. 혹시 모르는 사람의 DM을 차단한 분이 계시지 않을까요?")
+        return
     await ctx.send("오류가 발생하였습니다. >리셋을 통해 게임을 새로고침해주세요.")
     print(f"resistance_avalon - {datetime.datetime.now()} : <Error> {ctx.channel.id}, error: {error}")
     
