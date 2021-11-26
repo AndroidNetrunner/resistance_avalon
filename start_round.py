@@ -44,6 +44,7 @@ async def end_vote(current_game):
     	await next_vote(embed, current_game)
     current_round['agree'].clear()
     current_round['disagree'].clear()
+    print("reveal vote")
 
 async def next_vote(embed, current_game):
     game_status = current_game['game_status']
@@ -97,6 +98,7 @@ async def decide_team(game_room, game_status):
     for emoji in game_room.emojis:
         if game_room.emojis[emoji]:
             await message.add_reaction(emoji)
+    print('notify team leader')
 
 
 async def start_round(current_game):

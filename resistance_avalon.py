@@ -101,9 +101,9 @@ async def 참가(ctx):
     if player not in room_info.members:
         room_info.members.append(player)
         await ctx.send("{}님이 참가하셨습니다. 현재 플레이어 {}명".format(player.name, len(room_info.members)))
+        print("join")
     else:
         await ctx.send("{}님은 이미 참가중입니다.".format(player.name))
-
 @bot.command()
 async def 마감(ctx):
     if ctx.channel.id not in active_games:
@@ -120,6 +120,7 @@ async def 마감(ctx):
     await ctx.send("참가가 마감되었습니다.")
     await ready_game(current_game)
     await start_round(current_game)
+    print("close")
 
 @bot.command()
 async def 리셋(ctx):
@@ -129,6 +130,7 @@ async def 리셋(ctx):
     del active_games[ctx.channel.id]
     await bot.change_presence(activity=discord.Game(name=f"{len(active_games)}개 게임"))
     await ctx.send("진행하는 게임을 중단합니다.")
+    print("reset")
 
 @bot.event
 async def on_ready():

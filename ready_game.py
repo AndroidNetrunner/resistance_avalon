@@ -146,3 +146,4 @@ async def ready_game(current_game):
     5라운드: {current_quest_sheet[4]}\n""")
     await room_info.main_channel.send(embed=embed)
     current_game['game_status'].leader = random.choice(room_info.members)
+    print("ready")

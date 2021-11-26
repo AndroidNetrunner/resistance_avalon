@@ -28,7 +28,7 @@ async def start_mission(current_game):
         await mission_message[player].add_reaction("⭕")
         if game_status.roles[player] in [MORDRED, MORGANA, OBERON, EVIL, ASSASSIN]:
             await mission_message[player].add_reaction("❌")
-
+    print("start mission")
 
 async def try_mission(payload, team, current_game, lock):
     await lock.acquire()
@@ -74,7 +74,7 @@ async def judge_mission(current_game):
                     value=f"선의 세력: {game_status.round_success}, 악의 하수인: {game_status.round_fail}", inline=False)
     await game_room.main_channel.send(embed=embed)
     await next_round(current_game)
-
+    print("reveal mission")
 
 async def next_round(current_game):
     game_status = current_game['game_status']
